@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct Stack {
+ int arr[MAX];
+ int top;
+} Stack;
+void initStack(Stack* stack) {
+ stack->top = -1;
+}
+int isEmpty(Stack* stack) {
+ return stack->top == -1;
+}
+void push(Stack* stack, int value) {
+ if (stack->top == MAX - 1) {
+ printf("Stack Overflow\n");
+ return;
+ }
+ stack->arr[++(stack->top)] = value;
+}
+int pop(Stack* stack) {
+ if (isEmpty(stack)) {
+ printf("Stack Underflow\n");
+ return -1;
+ }
+ return stack->arr[(stack->top)--];
+}
+int peek(Stack* stack) {
+ if (isEmpty(stack)) {
+ printf("Stack is empty\n");
+ return -1;
+ }
+ return stack->arr[stack->top];
+}
+typedef struct QueueUsingTwoStacks {
+ Stack stack1;
+ Stack stack2;
+} QueueUsingTwoStacks;
+void initQueue(QueueUsingTwoStacks* queue) {
+ initStack(&queue->stack1);
+ initStack(&queue->stack2);
+}
+int isQueueEmpty(QueueUsingTwoStacks* queue) {
+ return isEmpty(&queue->stack1) && isEmpty(&queue->stack2);
+}
+void enqueue(QueueUsingTwoStacks* queue, int value) {
+ push(&queue->stack1, value);
+ printf("Enqueued %d\n", value);
+}
+int dequeue(QueueUsingTwoStacks* queue) {
+ if (isEmpty(&queue->stack2)) {
+ if (isEmpty(&queue->stack1)) {
+ printf("Queue is empty. Cannot dequeue.\n");
+ return -1; // Queue is empty
+ }
+ while (!isEmpty(&queue->stack1)) {
+ int value = pop(&queue->stack1);
+ push(&queue->stack2, value);
+ }
+ }
+ return pop(&queue->stack2);
+}
+int peekQueue(QueueUsingTwoStacks* queue) {
+ // If stack2 is empty, transfer all elements from stack1 to stack2
+ if (isEmpty(&queue->stack2)) {
+ if (isEmpty(&queue->stack1)) {
+ printf("Queue is empty. Cannot peek.\n");
+ return -1; // Queue is empty
+ }
+
+ while (!isEmpty(&queue->stack1)) {
+ int value = pop(&queue->stack1);
+ push(&queue->stack2, value);
+ }
+ }
+ return peek(&queue->stack2);
+}
+void displayQueue(QueueUsingTwoStacks* queue) {
+ printf("Queue using two stacks:\n");
+ printf("Stack1 (for enqueue): ");
+ for (int i = 0; i <= queue->stack1.top; i++) {
+printf("%d ", queue->stack1.arr[i]);
+ }
+ printf("\n")
+ printf("Stack2 (for dequeue): ");
+ for (int i = 0; i <= queue->stack2.top; i++) {
+ printf("%d ", queue->stack2.arr[i]);
+ }
+ printf("\n");
+}
+int main() {
+ QueueUsingTwoStacks queue;
+ initQueue(&queue);
+ enqueue(&queue, 10);
+ enqueue(&queue, 20);
+ enqueue(&queue, 30);
+ displayQueue(&queue)
+ printf("Front element (peek): %d\n", peekQueue(&queue)
+ printf("Dequeued: %d\n", dequeue(&queue));
+ printf("Dequeued: %d\n", dequeue(&queue));
+ displayQueue(&queue);
+ enqueue(&queue, 40);
+ enqueue(&queue, 50);
+ displayQueue(&queue);
+ printf("Front element (peek): %d\n", peekQueue(&queue));
+ printf("Dequeued: %d\n", dequeue(&queue));
+ printf("Dequeued: %d\n", dequeue(&queue));
+ printf("Dequeued: %d\n", dequeue(&queue));
+ if (isQueueEmpty(&queue)) {
+ printf("Queue is empty.\n");
+ } else {
+ printf("Queue is not empty.\n");
+ }
+ return 0;
+}
